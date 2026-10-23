@@ -1,27 +1,16 @@
 return {
-  "nvim-treesitter/nvim-treesitter",
-  event = { "BufReadPre", "BufNewFile" },
-  build = ":TSUpdate",
-  dependencies = {
-    "windwp/nvim-ts-autotag",
-    config = function()
-      require("nvim-ts-autotag").setup()
-    end,
+  {
+    "nvim-treesitter/nvim-treesitter",
+    branch = "main",
+    lazy = false, -- main ブランチは遅延読み込み非対応
+    build = ":TSUpdate",
   },
-  config = function()
-    -- import nvim-treesitter plugin
-    local treesitter = require("nvim-treesitter.configs")
-    -- configure treesitter
-    treesitter.setup({ -- enable syntax highlighting
-      highlight = {
-        enable = true,
-      },
-      -- enable indentation
-      indent = { enable = true },
-      -- enable autotagging (w/ nvim-ts-autotag plugin)
-      -- autotag = {
-      --   enable = true,
-      -- },
+  -- main ブランチで無くなった highlight / indent / incremental_selection を提供する
+  {
+    "MeanderingProgrammer/treesitter-modules.nvim",
+    lazy = false,
+    dependencies = { "nvim-treesitter/nvim-treesitter" },
+    opts = {
       -- ensure these language parsers are installed
       ensure_installed = {
         "json",
@@ -47,8 +36,15 @@ return {
         "go",
         "rust",
         "ocaml",
+        "ruby",
+        "embedded_template",
+        "scss",
       },
       auto_install = true,
+      -- enable syntax highlighting
+      highlight = { enable = true },
+      -- enable indentation
+      indent = { enable = true },
       incremental_selection = {
         enable = true,
         keymaps = {
@@ -58,6 +54,11 @@ return {
           node_decremental = "<bs>",
         },
       },
-    })
-  end,
+    },
+  },
+  {
+    "windwp/nvim-ts-autotag",
+    event = { "BufReadPre", "BufNewFile" },
+    opts = {},
+  },
 }

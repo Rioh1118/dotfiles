@@ -4,21 +4,18 @@ return {
   config = function()
     local lint = require("lint")
 
-    lint.linters_by_ft = {
-      javascript = { "eslint_d" },
-      typescript = { "eslint_d" },
-      javascriptreact = { "eslint_d" },
-      typescriptreact = { "eslint_d" },
-      svelte = { "eslint_d" },
-      python = { "pylint" },
-    }
+    -- JS/TS は eslint、Ruby は rubocop、Python は ruff の各 LSP が診断を出すので
+    -- ここには LSP が無い言語の linter だけを追加する
+    lint.linters_by_ft = {}
 
     local lint_augroup = vim.api.nvim_create_augroup("lint", { clear = true })
 
     vim.api.nvim_create_autocmd({ "BufEnter", "BufWritePost", "InsertLeave" }, {
       group = lint_augroup,
       callback = function()
-        lint.try_lint()
+        if vim.bo.buftype == "" and vim.bo.modifiable then
+          lint.try_lint()
+        end
       end,
     })
 

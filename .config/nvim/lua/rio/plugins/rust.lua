@@ -3,13 +3,18 @@ return {
     "mrcjkb/rustaceanvim",
     version = "^6", -- Recommended
     lazy = false,
-    ["rust-analyzer"] = {
-      cargo = {
-        allFeatures = true,
-      },
-    },
-    server = {
-      standalone = true,
-    },
+    init = function()
+      vim.g.rustaceanvim = {
+        server = {
+          default_settings = {
+            ["rust-analyzer"] = {
+              cargo = {
+                allFeatures = true,
+              },
+            },
+          },
+        },
+      }
+    end,
   },
 }
