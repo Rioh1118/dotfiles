@@ -1,16 +1,16 @@
--- Pull in the wezterm API
---
 local wezterm = require("wezterm")
-
--- This will hold the configuration.
+local act = wezterm.action
 local config = wezterm.config_builder()
+
+-- 起動したら tmux の main セッションにアタッチ（無ければ作る）。
+-- tmux サーバーが新しく起動したときは continuum が前回の状態を復元する。
+config.default_prog = { "/bin/zsh", "-l", "-c", "exec tmux new-session -A -s main" }
 
 config.font = wezterm.font("MesloLGS Nerd Font Mono")
 config.font_size = 19
 
 config.automatically_reload_config = true
 config.enable_tab_bar = false
-
 config.window_decorations = "RESIZE"
 
 config.colors = {
@@ -27,12 +27,12 @@ config.colors = {
 
 config.window_background_opacity = 0.88
 config.macos_window_background_blur = 10
---keep adding configuration options here
+
 config.keys = {
-	{
-		key = "¥",
-		mods = "OPT",
-		action = wezterm.action.SendKey({ key = "\\" }),
-	},
+	-- JIS 配列: Opt+¥ でバックスラッシュ
+	{ key = "¥", mods = "OPT", action = act.SendKey({ key = "\\" }) },
+	-- tmux を通さない素の zsh ウィンドウ（tmux が壊れたとき用）
+	{ key = "n", mods = "CMD|SHIFT", action = act.SpawnCommandInNewWindow({ args = { "/bin/zsh", "-l" } }) },
 }
+
 return config

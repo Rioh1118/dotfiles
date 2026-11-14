@@ -1,0 +1,10 @@
+# グローバルのランタイム。プロジェクトごとの版は各リポジトリの mise.toml / .tool-versions で指定する。
+# Python は uv で管理する（uv python install / uv tool install）。Rust は rustup。
+[tools]
+node = "lts"
+go = "latest"
+ruby = "3.3"
+
+[settings]
+# pnpm / yarn は corepack 経由で使う
+node.corepack = true

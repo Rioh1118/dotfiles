@@ -1,0 +1,33 @@
+#!/bin/zsh
+# ~/Downloads に 14 日以上置かれたファイルを片付ける（launchd で毎週日曜 10:00）
+#   書類・画像     → iCloud Drive/00_Inbox/YYYY-MM
+#   インストーラ類 → ゴミ箱
+#   3 ヶ月前の Inbox 月フォルダ → iCloud Drive/90_Archive/YYYY
+# 初回は「フルディスクアクセス」に /bin/zsh を追加しないと Downloads を読めない。
+set -u
+
+IC="$HOME/Library/Mobile Documents/com~apple~CloudDocs"
+[[ -d "$IC" ]] || { echo "iCloud Drive が見つかりません"; exit 1; }
+
+DEST="$IC/00_Inbox/$(date +%Y-%m)"
+mkdir -p "$DEST"
+cd "$HOME/Downloads" || exit 1
+
+find . -maxdepth 1 -type f -mtime +14 \( \
+    -iname '*.pdf' -o -iname '*.doc' -o -iname '*.docx' -o -iname '*.xls' -o -iname '*.xlsx' \
+    -o -iname '*.ppt' -o -iname '*.pptx' -o -iname '*.key' -o -iname '*.pages' -o -iname '*.numbers' \
+    -o -iname '*.png' -o -iname '*.jpg' -o -iname '*.jpeg' -o -iname '*.heic' -o -iname '*.csv' \
+  \) -exec mv -n {} "$DEST/" \;
+
+find . -maxdepth 1 -type f -mtime +14 \( \
+    -iname '*.dmg' -o -iname '*.pkg' -o -iname '*.zip' -o -iname '*.tar.gz' \
+  \) -exec mv {} "$HOME/.Trash/" \;
+
+OLD="$(date -v-3m +%Y-%m)"
+if [[ -d "$IC/00_Inbox/$OLD" ]]; then
+  mkdir -p "$IC/90_Archive/${OLD%-*}"
+  mv "$IC/00_Inbox/$OLD" "$IC/90_Archive/${OLD%-*}/"
+fi
+
+# 空の月フォルダは作らない
+rmdir "$DEST" 2>/dev/null || true
