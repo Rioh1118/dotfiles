@@ -33,6 +33,10 @@ mkdir -p "$HOME/.config" "$HOME/.local/bin" "$HOME/.local/share"
 stow -d "$DOT" -t "$HOME" --restow "${STOW_PKGS[@]}"
 # ~/.local と ~/.claude は他のツールがデータを書き込むので、ディレクトリごとではなくファイル単位でリンクする
 mkdir -p "$HOME/.claude"
+# Claude Code を先に起動していると settings.json が既にあるので退避する
+if [[ -e "$HOME/.claude/settings.json" && ! -L "$HOME/.claude/settings.json" ]]; then
+  mv "$HOME/.claude/settings.json" "$HOME/.claude/settings.json.pre-dotfiles"
+fi
 stow -d "$DOT" -t "$HOME" --restow --no-folding bin claude
 
 step "ランタイム (mise / rustup)"
